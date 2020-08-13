@@ -1,0 +1,5 @@
+HiddenServiceDir /var/lib/tor/hidden_service/
+# To make Web browser use easy, use port 80.
+HiddenServicePort 80 127.0.0.1:8000
+# But Icecast thinks it's on port 8000, so set that also.
+HiddenServicePort 8000 127.0.0.1:8000

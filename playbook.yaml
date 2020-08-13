@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+
+  roles:
+      - role: makarenalabs.icecast
+        vars:
+          - ice_hostname: This will get replaced later.
+          - ice_sourcepassword: "{{ ice_sourcepassword | default('password') }}"
+          - ice_relaypassword: "{{ ice_relaypassword | default('password') }}"
+          - ice_adminpassword: "{{ ice_adminpassword | default('password') }}"
+
+  tasks:
+      - name: Install Tor.
+        package:
+            name: tor
+
+      - name: Reconfigure Tor.
+        copy:
+          src: /vagrant/files/etc/tor/torrc
+          dest: /etc/tor/torrc
+
+      # This will create the Onion service if not already there.
+      - name: Reload Tor.
+        service:
+            name: tor
+            state: reloaded
+
+      - name: Onionize Icecast hostname.
+        shell: >
+            sed -i''
+            -e "s/<hostname>.*<\/hostname>/<hostname>$(cat /var/lib/tor/hidden_service/hostname)<\/hostname>/"
+            /etc/icecast2/icecast.xml
+
+      - name: Reload Icecast.
+        service:
+            name: icecast2
+            state: reloaded
