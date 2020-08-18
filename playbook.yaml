@@ -2,8 +2,25 @@
 - hosts: all
   become: true
 
+  vars:
+      tor_onion_services_backup_dir: "backup"
+
   roles:
       - role: anarchotechnyc.tor
+        when: onion_radio_private_key_file is defined
+        vars:
+            onion_services:
+                - name: onion_radio
+                  private_key_file: "{{ onion_radio_private_key_file }}"
+                  virtports:
+                      # The streaming client's port.
+                      - port_number: 8000
+                      # The Web browser's port.
+                      - port_number: 80
+                        target_port: 8000
+
+      - role: anarchotechnyc.tor
+        when: onion_radio_private_key_file is not defined
         vars:
             onion_services:
                 - name: onion_radio
@@ -13,6 +30,7 @@
                       # The Web browser's port.
                       - port_number: 80
                         target_port: 8000
+
       - role: anarchotechnyc.icecast
         vars:
             # TODO:

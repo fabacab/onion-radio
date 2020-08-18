@@ -7,7 +7,8 @@ Vagrant.configure("2") do |config|
     a.extra_vars = {
       icecast_admin_password: "#{ENV['icecast_admin_password']}",
       icecast_source_password: "#{ENV['icecast_source_password']}",
-      icecast_relay_password: "#{ENV['icecast_relay_password']}"
-    }
+      icecast_relay_password: "#{ENV['icecast_relay_password']}",
+      onion_radio_private_key_file: "#{ENV['onion_radio_private_key_file']}"
+    }.reject {|k,v| v.empty?}
   end
 end
