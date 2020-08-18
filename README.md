@@ -6,7 +6,7 @@ At a minimum, you'll want to set a streaming source password and the Icecast ser
 
 ```sh
 # These environment variables will get passed down via Vagrant to the Ansible playbook.
-ice_adminpassword=CHANGE_ME ice_sourcepassword=CHANGE_ME vagrant up
+icecast_admin_password=CHANGE_ME icecast_source_password=CHANGE_ME vagrant up
 ```
 
 Once it's online, you'll want to retrieve the Onion domain:

@@ -1,2 +1,7 @@
 ---
-- src: makarenalabs.icecast
+- name: anarchotechnyc.tor
+  src:  https://github.com/AnarchoTechNYC/ansible-role-tor.git
+  version: develop
+
+- name: anarchotechnyc.icecast
+  src: https://github.com/AnarchoTechNYC/ansible-role-icecast.git

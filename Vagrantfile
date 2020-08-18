@@ -5,9 +5,9 @@ Vagrant.configure("2") do |config|
     a.playbook = "playbook.yaml"
     a.galaxy_role_file = "requirements.yaml"
     a.extra_vars = {
-      ice_sourcepassword: "#{ENV['ice_sourcepassword']}",
-      ice_relaypassword: "#{ENV['ice_relaypassword']}",
-      ice_adminpassword: "#{ENV['ice_adminpassword']}"
+      icecast_admin_password: "#{ENV['icecast_admin_password']}",
+      icecast_source_password: "#{ENV['icecast_source_password']}",
+      icecast_relay_password: "#{ENV['icecast_relay_password']}"
     }
   end
 end
