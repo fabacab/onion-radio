@@ -1,12 +1,15 @@
 ---
-- hosts: all
+- name: Deploy Onion Radio.
+  hosts: all
   become: true
 
   vars:
       tor_onion_services_backup_dir: "backup"
 
-  roles:
-      - role: anarchotechnyc.tor
+  tasks:
+      - name: Recreate Onion service with private key.
+        import_role:
+            name: anarchotechnyc.tor
         when: onion_radio_private_key_file is defined
         vars:
             onion_services:
@@ -19,7 +22,9 @@
                       - port_number: 80
                         target_port: 8000
 
-      - role: anarchotechnyc.tor
+      - name: Create new Onion service.
+        import_role:
+            name: anarchotechnyc.tor
         when: onion_radio_private_key_file is not defined
         vars:
             onion_services:
@@ -31,11 +36,29 @@
                       - port_number: 80
                         target_port: 8000
 
-      - role: anarchotechnyc.icecast
+      - name: Register onion.
+        slurp:
+            src: /var/lib/tor/onion-services/onion_radio/hostname
+        register: onion_radio_domain
+
+      - name: Deploy Icecast.
+        import_role:
+            name: anarchotechnyc.icecast
         vars:
-            # TODO:
-            # What would be great is if the earlier run of the Tor
-            # Ansible role could register the actual Onion domains
-            # in use. Then, we can reference them via a registered
-            # variable or a fact that has been set for use here.
-            icecast_hostname: "{{ onion | default('TODO') }}"
+            icecast_hostname: "{{ onion_radio_domain.content | b64decode | trim | default('localhost') }}"
+
+- name: Verify Onion Radio is operational.
+  hosts: all
+  tasks:
+      - name: Verify Icecast is running.
+        uri:
+            url: http://localhost:8000/
+            return_content: true
+        register: r
+        failed_when: "'Icecast' not in r.content"
+
+      - assert:
+          that:
+              - onion_radio_domain.content
+          fail_msg: "Cannot identify Onion domain."
+          success_msg: "Onion Radio online at: http://{{ onion_radio_domain.content | b64decode | trim }}/"
